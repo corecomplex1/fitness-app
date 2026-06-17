@@ -1,4 +1,4 @@
-Forge Floor Plan — Phone App / PWA
+Basic Fitness Plan — Phone App / PWA
 
 This is a simple offline-capable web app for the Tier 1 six-week workout routine.
 
