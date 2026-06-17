@@ -1,6 +1,6 @@
 {
-  "name": "Forge Floor Plan",
-  "short_name": "Floor Plan",
+  "name": "Basic Fitness Plan",
+  "short_name": "Restart Plan",
   "description": "Tier 1 six-week fitness rhythm rebuild.",
   "start_url": "./index.html",
   "display": "standalone",
