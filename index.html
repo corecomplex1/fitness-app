@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#171717" />
+  <title>Forge Floor Plan</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <style>
+    :root {
+      --bg: #101010;
+      --panel: #1b1b1b;
+      --panel-2: #242424;
+      --text: #f5f2ea;
+      --muted: #b8b1a5;
+      --line: #37322c;
+      --accent: #ffb347;
+      --accent-2: #ff7a3d;
+      --green: #6ee7a8;
+      --red: #ff6b6b;
+      --blue: #8ab4ff;
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 0% 0%, rgba(255, 122, 61, .18), transparent 34%), var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 88px;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(16,16,16,.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      padding: calc(env(safe-area-inset-top) + 12px) 16px 12px;
+    }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    h1 { font-size: 1.18rem; margin: 0; letter-spacing: .2px; }
+    .subtitle { color: var(--muted); font-size: .82rem; margin-top: 2px; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1px solid var(--line); border-radius: 999px;
+      padding: 7px 10px; background: rgba(255,255,255,.04); color: var(--text);
+      font-size: .78rem; white-space: nowrap;
+    }
+    main { padding: 16px; max-width: 760px; margin: 0 auto; }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)), var(--panel);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+    .card h2 { font-size: 1.05rem; margin: 0 0 10px; }
+    .card h3 { font-size: .95rem; margin: 14px 0 8px; color: var(--accent); }
+    .muted { color: var(--muted); }
+    .small { font-size: .85rem; }
+    .today-title { font-size: 1.45rem; line-height: 1.14; margin: 0 0 8px; }
+    .date-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .status-row { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+    .stat {
+      background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+    }
+    .stat b { font-size: 1.1rem; display: block; }
+    .workout-section {
+      border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px;
+    }
+    ol, ul { padding-left: 20px; margin: 8px 0; }
+    li { margin: 7px 0; }
+    button, select, textarea, input {
+      font: inherit;
+    }
+    .btn {
+      border: 0; border-radius: 14px; padding: 12px 14px; color: #15120f;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      font-weight: 800; cursor: pointer; box-shadow: 0 8px 24px rgba(255,122,61,.22);
+    }
+    .btn.secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); box-shadow: none; }
+    .btn.good { background: linear-gradient(135deg, #78e6ad, #33c478); color: #092111; }
+    .btn.danger { background: #3a2020; color: #ffd2d2; border: 1px solid #663030; box-shadow: none; }
+    .button-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-top: 12px; }
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    textarea, select, input[type="date"] {
+      width: 100%; background: #111; color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 11px; resize: vertical;
+    }
+    label { display: block; color: var(--muted); font-size: .84rem; margin: 12px 0 6px; }
+    .tabs {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+      display: grid; grid-template-columns: repeat(5, 1fr);
+      background: rgba(20,20,20,.94); backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding: 8px 8px calc(env(safe-area-inset-bottom) + 8px);
+    }
+    .tab {
+      background: transparent; color: var(--muted); border: 0; padding: 8px 4px; border-radius: 12px; font-size: .74rem;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+    }
+    .tab span { font-size: 1.05rem; }
+    .tab.active { background: rgba(255,179,71,.12); color: var(--accent); }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .log-item { border: 1px solid var(--line); border-radius: 14px; padding: 12px; background: rgba(255,255,255,.03); margin-bottom: 10px; }
+    .log-head { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+    .badge { border-radius: 999px; padding: 4px 8px; font-size: .72rem; font-weight: 800; color: #111; background: var(--muted); white-space: nowrap; }
+    .badge.full { background: var(--green); }
+    .badge.e30 { background: var(--blue); }
+    .badge.e15 { background: var(--accent); }
+    .badge.missed { background: var(--red); }
+    .progress {
+      height: 12px; background: #0c0c0c; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; margin-top: 10px;
+    }
+    .bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--green)); transition: width .2s ease; }
+    details { border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; background: rgba(255,255,255,.03); margin-bottom: 10px; }
+    summary { cursor: pointer; font-weight: 800; }
+    .quote { color: var(--muted); border-left: 3px solid var(--accent); padding-left: 12px; margin-top: 10px; }
+    .hidden { display:none !important; }
+    @media (min-width: 620px) {
+      .button-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+      .status-row { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div>
+        <h1>Forge Floor Plan</h1>
+        <div class="subtitle">Tier 1 • six-week rhythm rebuild</div>
+      </div>
+      <div class="pill" id="variantPill">Variant A</div>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="screen active">
+      <div class="card">
+        <div class="date-row">
+          <span class="pill" id="todayDate">Today</span>
+          <span class="pill" id="blockDay">Day —</span>
+          <span class="pill" id="weekNum">Week —</span>
+        </div>
+        <h2 class="today-title" id="todayFocus">Loading…</h2>
+        <div class="muted" id="todayPurpose"></div>
+        <div class="progress"><div class="bar" id="progressBar"></div></div>
+        <div class="small muted" id="progressText"></div>
+      </div>
+
+      <div class="card">
+        <h2>Today's Session</h2>
+        <div id="todayWorkout"></div>
+      </div>
+
+      <div class="card">
+        <h2>Mark Complete</h2>
+        <label for="completionNotes">Notes</label>
+        <textarea id="completionNotes" rows="3" placeholder="What did you actually do? Any pain, energy, schedule friction?"></textarea>
+        <div class="button-grid">
+          <button class="btn good" data-complete="Full">Full</button>
+          <button class="btn secondary" data-complete="30-min Emergency">30-min</button>
+          <button class="btn secondary" data-complete="15-min Emergency">15-min</button>
+          <button class="btn danger" data-complete="Missed">Missed</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Today's Rule</h2>
+        <div class="quote">No zeroes. No grinders. The floor rebuilt under your feet.</div>
+      </div>
+    </section>
+
+    <section id="plan" class="screen">
+      <div class="card">
+        <h2>Weekly Rhythm</h2>
+        <div id="weeklyPlan"></div>
+      </div>
+      <div class="card">
+        <h2>All Sessions</h2>
+        <div id="allSessions"></div>
+      </div>
+    </section>
+
+    <section id="emergency" class="screen">
+      <div class="card">
+        <h2>Emergency Substitutions</h2>
+        <p class="muted small">These can replace any scheduled day. Completion still counts. Chain intact.</p>
+        <details open><summary>15-Minute Emergency Session</summary><div id="em15"></div></details>
+        <details open><summary>30-Minute Emergency Session</summary><div id="em30"></div></details>
+      </div>
+    </section>
+
+    <section id="log" class="screen">
+      <div class="card">
+        <h2>Ledger</h2>
+        <div class="status-row">
+          <div class="stat"><b id="statDone">0</b><span class="muted small">completed</span></div>
+          <div class="stat"><b id="statFull">0</b><span class="muted small">full</span></div>
+          <div class="stat"><b id="statEmergency">0</b><span class="muted small">emergency</span></div>
+          <div class="stat"><b id="statMissed">0</b><span class="muted small">missed</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Recent Entries</h2>
+        <div id="logList"></div>
+      </div>
+    </section>
+
+    <section id="settings" class="screen">
+      <div class="card">
+        <h2>Settings</h2>
+        <label for="variantSelect">Workout Variant</label>
+        <select id="variantSelect">
+          <option value="A">A — Garage gym/equipment</option>
+          <option value="B">B — Travel/hotel/bodyweight</option>
+        </select>
+        <label for="startDate">Official Start Date</label>
+        <input type="date" id="startDate" value="2026-06-15" />
+        <div class="button-row">
+          <button class="btn secondary" id="installBtn">Install App</button>
+          <button class="btn danger" id="clearBtn">Clear Logs</button>
+        </div>
+        <p class="small muted">Install requires the app to be served from a website/HTTPS. Local file mode still works for planning and logging in the browser, but may not install.</p>
+      </div>
+      <div class="card">
+        <h2>Operating Rules</h2>
+        <ul>
+          <li>Primary metric: complete the daily ritual.</li>
+          <li>Target effort: RPE 6–7. Leave reps in reserve.</li>
+          <li>No maxes, no failed reps, no grinding.</li>
+          <li>Sharp pain, nerve pain, or worsening joint pain means modify immediately.</li>
+          <li>Wednesday is default recovery day, but it can float to another weekday.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabs" aria-label="App tabs">
+    <button class="tab active" data-screen="home"><span>🔥</span>Today</button>
+    <button class="tab" data-screen="plan"><span>📋</span>Plan</button>
+    <button class="tab" data-screen="emergency"><span>⚡</span>Rescue</button>
+    <button class="tab" data-screen="log"><span>✅</span>Log</button>
+    <button class="tab" data-screen="settings"><span>⚙️</span>Settings</button>
+  </nav>
+
+  <script>
+    const STORE = 'forgeFloorPlanV1';
+    const DEFAULT_START = '2026-06-15';
+    const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const purposes = {
+      'Strength A': 'Squat + push + pull + core.',
+      'Cardio': 'Heart-health base. Conversational pace.',
+      'Mobility / Recovery': 'Joint health, tissue tolerance, easy movement.',
+      'Strength B': 'Hinge + press + single-leg + core.',
+      'Cardio / Conditioning': 'Aerobic consistency with optional intervals after Week 2.',
+      'Full-Body Strength + Cardio': 'Hardest training day. Still no grinders.',
+      'Long Easy Cardio + Mobility': 'Health, fat loss support, recovery.'
+    };
+
+    const weekly = {
+      1: { focus: 'Long Easy Cardio + Mobility', time: '60 min' },
+      2: { focus: 'Strength A', time: '30 min' },
+      3: { focus: 'Cardio', time: '30 min' },
+      4: { focus: 'Mobility / Recovery', time: '30 min' },
+      5: { focus: 'Strength B', time: '30 min' },
+      6: { focus: 'Cardio / Conditioning', time: '30 min' },
+      7: { focus: 'Full-Body Strength + Cardio', time: '60 min' }
+    };
+
+    const workouts = {
+      A: {
+        'Strength A': `
+          <h3>Warm-up — 5 min</h3><ul><li>2 min easy walk, elliptical, or row</li><li>10 bodyweight squats</li><li>10 band pull-aparts</li><li>8 hip hinges</li><li>5 pushups or incline pushups</li><li>5 dead bugs per side</li></ul>
+          <h3>Main work — 20 min</h3><ol><li>Back squat or goblet squat — 2–3 x 8–10</li><li>Bench press or pushups — 2–3 x 8–12</li><li>Dumbbell row or barbell row — 2–3 x 8–12</li><li>Band face pulls — 2 x 12–20</li><li>Dead bug or plank — 2 sets</li></ol>
+          <h3>Cooldown — 5 min</h3><ul><li>Hip flexor stretch</li><li>Doorway pec stretch</li><li>Easy breathing</li></ul>` ,
+        'Cardio': `<ul><li>30-minute brisk walk, easy jog/walk, elliptical, or easy Concept2 row.</li><li>Conversational/moderate pace. You should be able to speak in short sentences.</li></ul>`,
+        'Mobility / Recovery': `<ul><li>10 min easy walk or elliptical</li><li>Cat-cow — 8 reps</li><li>Thread-the-needle — 6 per side</li><li>Couch stretch — 45 sec per side</li><li>Hamstring stretch — 45 sec per side</li><li>Band pull-aparts — 2 x 15</li><li>Band external rotations — 2 x 12 per side</li><li>Dead bug — 2 x 6 per side</li><li>Child’s pose breathing — 1–2 min</li></ul>`,
+        'Strength B': `<h3>Warm-up — 5 min</h3><ul><li>2 min easy walk, elliptical, or row</li><li>10 glute bridges</li><li>8 bodyweight good mornings</li><li>10 band pull-aparts</li><li>5 light overhead presses or wall slides</li></ul><h3>Main work — 20 min</h3><ol><li>Romanian deadlift or light deadlift — 2–3 x 6–10</li><li>Light overhead press or dumbbell press — 2–3 x 8–10</li><li>Split squat or step-up — 2 x 8 per side</li><li>Band external rotation or face pull — 2 x 12–20</li><li>Side plank or bird dog — 2 sets</li></ol>`,
+        'Cardio / Conditioning': `<ul><li>Default: 5 min easy warm-up, 20 min brisk walk/jog-walk/elliptical, 5 min cooldown.</li><li>Optional after Week 2: 10 rounds of 30 sec faster / 60 sec easy, bookended by easy warm-up and cooldown.</li></ul>`,
+        'Full-Body Strength + Cardio': `<h3>Warm-up — 10 min</h3><ul><li>5 min walk/elliptical/row</li><li>Bodyweight squats, hip hinges, band pull-aparts, shoulder external rotations, dead bugs</li></ul><h3>Strength — 35 min</h3><ol><li>Squat variation — 3 x 8</li><li>Bench press or pushups — 3 x 8–12</li><li>Romanian deadlift or light deadlift — 3 x 6–10</li><li>Row variation — 3 x 8–12</li><li>Farmer carry — 3 carries of 30–60 sec</li></ol><h3>Cardio finish — 10 min</h3><ul><li>Easy walk, elliptical, moderate row, or jog/walk</li></ul><h3>Cooldown — 5 min</h3><ul><li>Hips, chest, lats, breathing</li></ul>`,
+        'Long Easy Cardio + Mobility': `<ul><li>45–50 min walk, hike, easy jog/walk, or elliptical</li><li>10–15 min mobility: couch stretch, hamstring stretch, thoracic rotation, doorway pec stretch, band pull-aparts, band external rotations, child’s pose breathing</li></ul>`
+      },
+      B: {
+        'Strength A': `<h3>Warm-up — 5 min</h3><ul><li>March in place or brisk walk</li><li>Bodyweight squats</li><li>Arm circles</li><li>Hip hinges</li><li>Dead bugs</li></ul><h3>Main work — 20 min</h3><p>3 rounds, easy/moderate pace:</p><ul><li>Bodyweight squats — 12–20</li><li>Pushups or incline pushups — 6–15</li><li>Reverse lunges — 8 per side</li><li>Towel isometric row — 20–30 sec</li><li>Dead bug — 6 per side</li></ul><h3>Cooldown — 5 min</h3><ul><li>Stretch hips, chest, hamstrings</li></ul>`,
+        'Cardio': `<ul><li>30-minute walk outside, treadmill walk, jog/walk intervals, or safe stairs.</li><li>Default: brisk walk.</li></ul>`,
+        'Mobility / Recovery': `<ul><li>10 min easy walk</li><li>Cat-cow</li><li>Thread-the-needle</li><li>Hip flexor stretch</li><li>Hamstring stretch</li><li>Prone Y/T/W shoulder raises</li><li>Dead bug</li><li>Child’s pose breathing</li></ul>`,
+        'Strength B': `<p>3 rounds:</p><ul><li>Single-leg Romanian deadlift, bodyweight — 8 per side</li><li>Glute bridge — 12–20</li><li>Pushups or pike pushups — 6–12</li><li>Split squat — 8 per side</li><li>Side plank — 20–40 sec per side</li><li>Prone swimmers or reverse snow angels — 8–12</li></ul><p class="muted small">If pike pushups feel sketchy, use regular or incline pushups.</p>`,
+        'Cardio / Conditioning': `<ul><li>Default: 5 min easy walk, 20 min jog/walk or brisk walk, 5 min cooldown.</li><li>Optional: 10 rounds of 30 sec faster / 60 sec easy.</li></ul>`,
+        'Full-Body Strength + Cardio': `<h3>Warm-up — 10 min</h3><ul><li>Walk + dynamic mobility</li></ul><h3>Circuit — 30 min</h3><p>Do 3–5 rounds:</p><ul><li>Squat — 15–20</li><li>Pushup — 8–15</li><li>Reverse lunge — 10 per side</li><li>Glute bridge — 15–20</li><li>Towel isometric row — 20–30 sec</li><li>Plank — 30–45 sec</li></ul><h3>Cardio — 15 min</h3><ul><li>Walk, jog/walk, stairs, or treadmill</li></ul><h3>Cooldown — 5 min</h3><ul><li>Stretch and breathe</li></ul>`,
+        'Long Easy Cardio + Mobility': `<ul><li>45–50 min walk or jog/walk</li><li>10–15 min mobility</li></ul>`
+      }
+    };
+
+    const emergency15 = `<ul><li>5 min brisk walk, stairs, elliptical, or marching in place</li><li>8 min calm circuit: 10 squats, 5–10 pushups, 8 hip hinges, 6 dead bugs per side, 10 band pull-aparts or prone Y/T/Ws</li><li>2 min stretch hips/chest and breathe</li></ul>`;
+    const emergency30 = `<ul><li>20 min brisk walk, jog/walk, elliptical, or row</li><li>10 min mobility/core: couch stretch, hamstring stretch, thoracic rotations, band pull-aparts or prone Y/T/Ws, dead bug or plank</li></ul>`;
+
+    function seedState() {
+      return {
+        variant: 'A',
+        startDate: DEFAULT_START,
+        logs: {
+          '2026-06-14': { completion: 'Full', focus: 'Long Easy Cardio + Mobility', notes: 'Soft launch: 40–45 min neighborhood trail, ~3.03 miles, ~40% jog / 60% walk, stretching and sun salutations.' },
+          '2026-06-15': { completion: 'Full', focus: 'Strength A', notes: 'Full warm-up. Pushups 30/20/20. Back squat 3x10 @ 135. Bent-over row 3x12 @ 135. Band face pulls 2x15. Dead bugs 2x10/side.' }
+        }
+      };
+    }
+    function getState() { return JSON.parse(localStorage.getItem(STORE) || 'null') || seedState(); }
+    function setState(state) { localStorage.setItem(STORE, JSON.stringify(state)); }
+    let state = getState();
+
+    function localDateString(date = new Date()) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth()+1).padStart(2,'0');
+      const d = String(date.getDate()).padStart(2,'0');
+      return `${y}-${m}-${d}`;
+    }
+    function parseLocalDate(str) {
+      const [y,m,d] = str.split('-').map(Number);
+      return new Date(y, m-1, d);
+    }
+    function daysBetween(a,b) {
+      const ms = parseLocalDate(b) - parseLocalDate(a);
+      return Math.floor(ms / 86400000);
+    }
+    function getTodayInfo() {
+      const today = new Date();
+      const dateStr = localDateString(today);
+      const dow = today.getDay();
+      const mondayBased = dow === 0 ? 1 : dow + 1;
+      const sched = weekly[mondayBased];
+      const blockDay = daysBetween(state.startDate, dateStr) + 1;
+      const week = Math.max(1, Math.ceil(blockDay / 7));
+      return { today, dateStr, dow, sched, blockDay, week };
+    }
+    function completionClass(c) {
+      if (c === 'Full') return 'full';
+      if (c === '30-min Emergency') return 'e30';
+      if (c === '15-min Emergency') return 'e15';
+      if (c === 'Missed') return 'missed';
+      return '';
+    }
+    function render() {
+      document.getElementById('variantPill').textContent = `Variant ${state.variant}`;
+      document.getElementById('variantSelect').value = state.variant;
+      document.getElementById('startDate').value = state.startDate;
+
+      const info = getTodayInfo();
+      const formattedDate = info.today.toLocaleDateString(undefined, { weekday:'long', month:'short', day:'numeric' });
+      document.getElementById('todayDate').textContent = formattedDate;
+      document.getElementById('blockDay').textContent = info.blockDay > 0 ? `Day ${info.blockDay}` : 'Pre-start';
+      document.getElementById('weekNum').textContent = info.blockDay > 0 ? `Week ${Math.min(info.week,6)}` : 'Soft launch';
+      document.getElementById('todayFocus').textContent = `${info.sched.focus} • ${info.sched.time}`;
+      document.getElementById('todayPurpose').textContent = purposes[info.sched.focus] || '';
+      document.getElementById('todayWorkout').innerHTML = workouts[state.variant][info.sched.focus];
+
+      const fullBlockDates = Object.keys(state.logs).filter(d => daysBetween(state.startDate, d) >= 0 && daysBetween(state.startDate, d) <= 41);
+      const completed = fullBlockDates.filter(d => state.logs[d].completion !== 'Missed').length;
+      const pct = Math.min(100, Math.round((completed / 42) * 100));
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressText').textContent = `${completed}/42 official days completed. ${pct}% of the six-week chain.`;
+
+      renderWeeklyPlan();
+      renderAllSessions();
+      renderLog();
+      document.getElementById('em15').innerHTML = emergency15;
+      document.getElementById('em30').innerHTML = emergency30;
+    }
+    function renderWeeklyPlan() {
+      const names = {1:'Sunday',2:'Monday',3:'Tuesday',4:'Wednesday',5:'Thursday',6:'Friday',7:'Saturday'};
+      document.getElementById('weeklyPlan').innerHTML = Object.entries(weekly).map(([k,v]) => `<details><summary>${names[k]} — ${v.focus} (${v.time})</summary><div class="muted small">${purposes[v.focus] || ''}</div></details>`).join('');
+    }
+    function renderAllSessions() {
+      document.getElementById('allSessions').innerHTML = Object.keys(workouts[state.variant]).map(name => `<details><summary>${name}</summary>${workouts[state.variant][name]}</details>`).join('');
+    }
+    function renderLog() {
+      const entries = Object.entries(state.logs).sort((a,b) => b[0].localeCompare(a[0]));
+      const done = entries.filter(([_,l]) => l.completion !== 'Missed').length;
+      const full = entries.filter(([_,l]) => l.completion === 'Full').length;
+      const emergency = entries.filter(([_,l]) => l.completion === '30-min Emergency' || l.completion === '15-min Emergency').length;
+      const missed = entries.filter(([_,l]) => l.completion === 'Missed').length;
+      document.getElementById('statDone').textContent = done;
+      document.getElementById('statFull').textContent = full;
+      document.getElementById('statEmergency').textContent = emergency;
+      document.getElementById('statMissed').textContent = missed;
+      document.getElementById('logList').innerHTML = entries.length ? entries.map(([date, log]) => {
+        const d = parseLocalDate(date).toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' });
+        return `<div class="log-item"><div class="log-head"><div><b>${d}</b><div class="muted small">${log.focus || ''}</div></div><span class="badge ${completionClass(log.completion)}">${log.completion}</span></div>${log.notes ? `<p class="small">${escapeHtml(log.notes)}</p>` : ''}</div>`;
+      }).join('') : '<p class="muted">No entries yet.</p>';
+    }
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[ch]));
+    }
+
+    document.querySelectorAll('[data-complete]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const info = getTodayInfo();
+        const notes = document.getElementById('completionNotes').value.trim();
+        state.logs[info.dateStr] = { completion: btn.dataset.complete, focus: info.sched.focus, notes };
+        setState(state);
+        document.getElementById('completionNotes').value = '';
+        render();
+        showScreen('log');
+      });
+    });
+    document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.screen)));
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelector(`[data-screen="${id}"]`).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    document.getElementById('variantSelect').addEventListener('change', e => { state.variant = e.target.value; setState(state); render(); });
+    document.getElementById('startDate').addEventListener('change', e => { state.startDate = e.target.value || DEFAULT_START; setState(state); render(); });
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      if (confirm('Clear all local workout logs?')) { state.logs = {}; setState(state); render(); }
+    });
+
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+    document.getElementById('installBtn').addEventListener('click', async () => {
+      if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; }
+      else { alert('Use your browser menu: Add to Home screen / Install app. This works best after hosting the folder on GitHub Pages or another HTTPS site.'); }
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js').catch(() => {}));
+    }
+    render();
+  </script>
+</body>
+</html>
